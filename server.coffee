@@ -11,7 +11,7 @@ errorHandler = require 'errorhandler'
 OctobluStrategy = require 'passport-octoblu'
 debug = require('debug')('octoblu-oauth-server-example')
 
-PORT  = process.env.PORT || 5988
+PORT  = process.env.PORT || 80
 
 passport.serializeUser (user, done) ->
   done null, JSON.stringify user
