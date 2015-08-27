@@ -43,6 +43,10 @@ passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, pro
   next null, uuid: profile.uuid
 
 app.get '/', passport.authenticate('octoblu')
+
+app.get '/healthcheck', (req, res) ->
+  res.send('{"online":true}').status(200)
+
 app.get '/callback', passport.authenticate('octoblu'), (req, res) ->
   res.send(req.session.token)
 
