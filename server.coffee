@@ -8,8 +8,10 @@ passport = require 'passport'
 session = require 'cookie-session'
 bodyParser = require 'body-parser'
 errorHandler = require 'errorhandler'
+MeshbluConfig = require 'meshblu-config'
 OctobluStrategy = require 'passport-octoblu'
 debug = require('debug')('octoblu-oauth-server-example')
+CredentialManager = require './src/models/credential-manager'
 
 PORT  = process.env.PORT || 80
 
@@ -31,24 +33,46 @@ app.use bodyParser.json limit : '50mb'
 
 app.options '*', cors()
 
+meshbluConfig = new MeshbluConfig
+
+options =
+  name: 'Octoblu'
+
+credentialManager = new CredentialManager options, meshbluConfig
+
 octobluStrategyConfig =
-  clientID: process.env.CLIENT_ID
-  clientSecret: process.env.CLIENT_SECRET
+  clientID: meshbluConfig.uuid
+  clientSecret: meshbluConfig.token
   callbackURL: 'https://oauth.crossy.io/callback'
   passReqToCallback: true
 
 passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, profile, next) ->
   debug 'got token', token, secret
   req.session.token = token
+  req.session.userUuid = profile.uuid
   next null, uuid: profile.uuid
 
-app.get '/', passport.authenticate('octoblu')
+app.get '/', (req, res) ->
+  req.session.callbackUrl = req.query.callbackUrl
+  debug 'callbackUrl', req.session.callbackUrl
+  passport.authenticate('octoblu') req, res
 
 app.get '/healthcheck', (req, res) ->
   res.send('{"online":true}').status(200)
 
 app.get '/callback', passport.authenticate('octoblu'), (req, res) ->
-  res.send(req.session.token)
+  credentialManager.findOrCreate req.session.userUuid, req.session.userUuid, req.session.token, (error, result) =>
+    return res.status(422).send(error.message) if error?
+
+    if req.session.callbackUrl?
+      callbackUrl = url.parse req.session.callbackUrl, true
+      delete callbackUrl.search
+      callbackUrl.query.uuid = result.uuid
+      callbackUrl.query.creds_uuid = result.creds.uuid
+      callbackUrl.query.creds_token = result.creds.token
+      return res.redirect url.format(callbackUrl)
+
+  res.status(200).end()
 
 server = app.listen PORT, ->
   host = server.address().address
