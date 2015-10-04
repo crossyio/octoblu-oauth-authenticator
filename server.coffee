@@ -25,7 +25,7 @@ app = express()
 app.use cors()
 app.use morgan('combined')
 app.use errorHandler()
-app.use session cookie: {secure: true}, secret: 'totally secret', name: 'octoblu-oauth-server-example'
+app.use session cookie: {secure: true}, secret: 'totally secret', name: 'oauth-crossy-io'
 app.use passport.initialize()
 app.use passport.session()
 app.use bodyParser.urlencoded limit: '50mb', extended : true
