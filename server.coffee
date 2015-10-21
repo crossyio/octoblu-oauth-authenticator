@@ -33,7 +33,7 @@ app.use bodyParser.json limit : '50mb'
 
 app.options '*', cors()
 
-meshbluConfig = new MeshbluConfig
+meshbluConfig = new MeshbluConfig().toJSON()
 
 options =
   name: 'Octoblu'
