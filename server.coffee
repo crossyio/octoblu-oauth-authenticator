@@ -46,12 +46,14 @@ octobluStrategyConfig =
   callbackURL: 'https://oauth.crossy.io/callback'
   passReqToCallback: true
 
-octobluStrategy = new OctobluStrategy octobluStrategyConfig
-passport.use octobluStrategy, (req, token, secret, profile, next) ->
+verifyCallback = (req, token, secret, profile, next) ->
   debug 'got token', token, secret
   req.session.token = token
   req.session.userUuid = profile.uuid
   next null, uuid: profile.uuid
+
+octobluStrategy = new OctobluStrategy octobluStrategyConfig, verifyCallback
+passport.use octobluStrategy
 
 app.get '/', (req, res) ->
   req.session.callbackUrl = req.query.callbackUrl
