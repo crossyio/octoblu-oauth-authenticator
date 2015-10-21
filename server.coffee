@@ -46,7 +46,8 @@ octobluStrategyConfig =
   callbackURL: 'https://oauth.crossy.io/callback'
   passReqToCallback: true
 
-passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, profile, next) ->
+octobluStrategy = new OctobluStrategy octobluStrategyConfig
+passport.use octobluStrategy, (req, token, secret, profile, next) ->
   debug 'got token', token, secret
   req.session.token = token
   req.session.userUuid = profile.uuid
@@ -61,7 +62,8 @@ app.get '/healthcheck', (req, res) ->
   res.send('{"online":true}').status(200)
 
 app.get '/callback', passport.authenticate('octoblu'), (req, res) ->
-  credentialManager.findOrCreate req.session.userUuid, req.session.userUuid, req.session.token, (error, result) =>
+  {userUuid, token} = req.session
+  credentialManager.findOrCreate userUuid, userUuid, token, (error, result) =>
     return res.status(422).send(error.message) if error?
 
     if req.session.callbackUrl?
