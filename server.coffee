@@ -41,8 +41,8 @@ options =
 credentialManager = new CredentialManager options, meshbluConfig
 
 octobluStrategyConfig =
-  clientID: meshbluConfig.uuid
-  clientSecret: meshbluConfig.token
+  clientID: process.env.CLIENT_ID
+  clientSecret: process.env.CLIENT_SECRET
   callbackURL: 'https://oauth.crossy.io/callback'
   passReqToCallback: true
 
