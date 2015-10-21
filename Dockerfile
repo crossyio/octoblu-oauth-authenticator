@@ -1,4 +1,4 @@
-FROM node:0.10-onbuild
-MAINTAINER Octoblu <docker@octoblu.com>
+FROM node:4-onbuild
+MAINTAINER CrossyIO <docker@crossy.io>
 
 EXPOSE 80
