@@ -1,5 +1,7 @@
 # octoblu-oauth-server-example
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/crossyio/octoblu-oauth-authenticator.svg)](https://greenkeeper.io/)
+
 This is an example Express server using [passport-octoblu](https://github.com/octoblu/passport-octoblu) to generate an OAuth token for Octoblu / Meshblu.
 
 ## Requirements
